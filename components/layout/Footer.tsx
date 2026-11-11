@@ -64,7 +64,7 @@ export function Footer() {
           <h3 className="text-sm font-semibold uppercase tracking-wide text-white">Get in touch</h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-gold" /> +94 77 123 4567
+              <Phone className="h-4 w-4 text-gold" /> +94 77 029 1675
             </li>
             <li className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-gold" /> hello@ceylonroute.lk

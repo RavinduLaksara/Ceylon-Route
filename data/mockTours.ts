@@ -25,8 +25,7 @@ export const pricingSettings: PricingSettings = {
     KDH: 0.7,
   },
   driverDailyBatta: 15.0,
-  // Demo number — replace with the real business line when going live.
-  whatsappNumber: '+94771234567',
+  whatsappNumber: '+94770291675',
 };
 
 export const vehicleOrder: VehicleType[] = ['Wagon R', 'Aqua', 'Sedan', 'KDH'];
