@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PackageGrid } from "@/components/packages/PackageGrid";
-import { travelStyles, tourPackages } from "@/data/mockTours";
+import { getPackages, getSettings, getTravelStyles } from "@/lib/data/queries";
 
 export const metadata: Metadata = {
   title: "Tour Packages",
@@ -8,7 +8,13 @@ export const metadata: Metadata = {
     "Browse CeylonRoute's private, driver-guided Sri Lanka tour packages — culture, wildlife, adventure and scenic routes with transparent pricing.",
 };
 
-export default function PackagesPage() {
+export default async function PackagesPage() {
+  const [packages, styles, settings] = await Promise.all([
+    getPackages(),
+    getTravelStyles(),
+    getSettings(),
+  ]);
+
   return (
     <div className="bg-surface">
       {/* Page header */}
@@ -29,7 +35,7 @@ export default function PackagesPage() {
 
       <section className="py-14 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <PackageGrid packages={tourPackages} styles={travelStyles} />
+          <PackageGrid packages={packages} styles={styles} settings={settings} />
         </div>
       </section>
     </div>

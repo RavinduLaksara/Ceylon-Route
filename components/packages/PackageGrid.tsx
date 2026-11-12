@@ -1,16 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { TourPackage } from "@/types/tour";
+import type { PricingSettings, TourPackage } from "@/types/tour";
 import { PackageCard } from "./PackageCard";
 import { cn } from "@/lib/utils";
 
 export function PackageGrid({
   packages,
   styles,
+  settings,
 }: {
   packages: TourPackage[];
   styles: string[];
+  settings: PricingSettings;
 }) {
   const [filter, setFilter] = useState<string>("All");
 
@@ -52,7 +54,7 @@ export function PackageGrid({
         style={{ animation: "var(--animate-fade-in)" }}
       >
         {visible.map((pkg) => (
-          <PackageCard key={pkg.id} pkg={pkg} />
+          <PackageCard key={pkg.id} pkg={pkg} settings={settings} />
         ))}
       </div>
 

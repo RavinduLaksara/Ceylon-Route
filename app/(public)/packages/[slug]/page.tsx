@@ -3,15 +3,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Clock, MapPin, Moon, ChevronRight } from "lucide-react";
-import { getPackageBySlug, pricingSettings, tourPackages } from "@/data/mockTours";
+import { getPackageBySlug, getPackages, getSettings } from "@/lib/data/queries";
 import { Gallery } from "@/components/packages/Gallery";
 import { ItineraryTimeline } from "@/components/packages/ItineraryTimeline";
 import { BookingSidebar } from "@/components/packages/BookingSidebar";
 
 type Params = { slug: string };
 
-export function generateStaticParams(): Params[] {
-  return tourPackages.map((p) => ({ slug: p.slug }));
+// Known seed slugs — used as a fallback so the build still prerenders at least
+// one param when the Supabase `packages` table hasn't been seeded yet.
+// (Cache Components requires generateStaticParams to return ≥ 1 result.)
+const FALLBACK_SLUGS = [
+  "cultural-triangle-kandy-highlights",
+  "epic-sri-lanka-adventure",
+  "southern-coast-wildlife-safari",
+];
+
+export async function generateStaticParams(): Promise<Params[]> {
+  const packages = await getPackages();
+  if (packages.length === 0) return FALLBACK_SLUGS.map((slug) => ({ slug }));
+  return packages.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
@@ -20,7 +31,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const pkg = getPackageBySlug(slug);
+  const pkg = await getPackageBySlug(slug);
   if (!pkg) return { title: "Tour not found" };
   return {
     title: pkg.title,
@@ -28,7 +39,7 @@ export async function generateMetadata({
     openGraph: {
       title: pkg.title,
       description: pkg.subtitle,
-      images: [pkg.coverImage],
+      images: pkg.coverImage ? [pkg.coverImage] : [],
     },
   };
 }
@@ -39,7 +50,11 @@ export default async function PackageDetailPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const pkg = getPackageBySlug(slug);
+  const [pkg, settings, packages] = await Promise.all([
+    getPackageBySlug(slug),
+    getSettings(),
+    getPackages(),
+  ]);
   if (!pkg) notFound();
 
   return (
@@ -132,7 +147,7 @@ export default async function PackageDetailPage({
 
           {/* Sticky booking sidebar */}
           <aside>
-            <BookingSidebar pkg={pkg} settings={pricingSettings} />
+            <BookingSidebar pkg={pkg} settings={settings} packages={packages} />
           </aside>
         </div>
       </div>

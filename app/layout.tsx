@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
-import { pricingSettings } from "@/data/mockTours";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,12 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-surface text-ink">
-        <Navbar whatsappNumber={pricingSettings.whatsappNumber} />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <FloatingWhatsApp whatsappNumber={pricingSettings.whatsappNumber} />
-      </body>
+      <body className="min-h-full flex flex-col bg-surface text-ink">{children}</body>
     </html>
   );
 }

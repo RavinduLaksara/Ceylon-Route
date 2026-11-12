@@ -7,7 +7,13 @@ import type { Review } from "@/types/tour";
 import { StarRating } from "@/components/ui/StarRating";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-export function ReviewCarousel({ reviews }: { reviews: Review[] }) {
+export function ReviewCarousel({
+  reviews,
+  action,
+}: {
+  reviews: Review[];
+  action?: React.ReactNode;
+}) {
   const [index, setIndex] = useState(0);
   const count = reviews.length;
 
@@ -88,6 +94,8 @@ export function ReviewCarousel({ reviews }: { reviews: Review[] }) {
               <ChevronRight className="h-5 w-5" />
             </button>
           </div>
+
+          {action && <div className="mt-8 text-center">{action}</div>}
         </div>
       </div>
     </section>
