@@ -4,27 +4,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Users, Briefcase, Snowflake, Plug, BadgeCheck, Check } from "lucide-react";
-import type { VehicleRate, VehicleType } from "@/types/tour";
-import { fleetDetails, fleetPerks, tourPackages } from "@/data/mockTours";
+import type { TourPackage, VehicleRate, VehicleType } from "@/types/tour";
+import { fleetDetails, fleetPerks } from "@/data/mockTours";
 import { formatUsd } from "@/lib/pricing";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 
-/**
- * KDH (9 pax) suits every group; smaller cars (3 pax) suit the lighter tours.
- * This is a simple demo mapping of "compatible" packages per vehicle.
- */
-function compatiblePackages(vehicle: VehicleType) {
-  if (vehicle === "KDH") return tourPackages;
-  // Smaller vehicles: everything works for up-to-3 travellers.
-  return tourPackages;
-}
-
-export function FleetShowcase({ fleet }: { fleet: VehicleRate[] }) {
+export function FleetShowcase({
+  fleet,
+  packages,
+}: {
+  fleet: VehicleRate[];
+  packages: TourPackage[];
+}) {
   const [active, setActive] = useState<VehicleType>("Aqua");
   const current = fleet.find((f) => f.type === active) ?? fleet[0];
   const details = fleetDetails[active];
-  const packages = compatiblePackages(active);
 
   return (
     <section id="fleet" className="scroll-mt-20 bg-surface py-20 sm:py-24">

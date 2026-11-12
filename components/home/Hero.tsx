@@ -4,16 +4,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ChevronRight, Clock, Car } from "lucide-react";
-import type { PricingSettings, VehicleType } from "@/types/tour";
+import type { PricingSettings, TourPackage, VehicleType } from "@/types/tour";
 import { startingDayRate, formatUsd } from "@/lib/pricing";
 import { buildWhatsAppLink, vehicleLabel } from "@/lib/whatsapp";
 import { vehicleOrder } from "@/data/mockTours";
+import { BookingModal } from "@/components/booking/BookingModal";
 
 const durations = [3, 4, 6, 8, 10];
 
-export function Hero({ settings }: { settings: PricingSettings }) {
+export function Hero({
+  settings,
+  packages,
+}: {
+  settings: PricingSettings;
+  packages: TourPackage[];
+}) {
   const [vehicle, setVehicle] = useState<VehicleType>("Aqua");
   const [days, setDays] = useState<number>(4);
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   const dayRate = useMemo(() => startingDayRate(vehicle, settings), [vehicle, settings]);
   const estimate = useMemo(() => dayRate * days, [dayRate, days]);
@@ -172,17 +180,34 @@ export function Hero({ settings }: { settings: PricingSettings }) {
               </p>
             </div>
 
+            <button
+              type="button"
+              onClick={() => setBookingOpen(true)}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold text-ceylon-900 transition-transform hover:scale-[1.02]"
+            >
+              Book Now · Pay on Arrival
+            </button>
             <a
               href={waHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold text-ceylon-900 transition-transform hover:scale-[1.02]"
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-ceylon-800/15 px-5 py-2.5 text-sm font-semibold text-ceylon-800 transition-colors hover:bg-ceylon-50"
             >
-              Get my tailored quote
+              Get a tailored quote on WhatsApp
             </a>
           </div>
         </div>
       </div>
+
+      {bookingOpen && (
+        <BookingModal
+          open
+          onClose={() => setBookingOpen(false)}
+          settings={settings}
+          packages={packages}
+          initialVehicle={vehicle}
+        />
+      )}
     </section>
   );
 }

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { MapPin, Mail, Phone, ShieldCheck } from "lucide-react";
-import { tourPackages } from "@/data/mockTours";
+import { getPackages } from "@/lib/data/queries";
 
-export function Footer() {
+export async function Footer() {
   const year = 2026;
+  const tourPackages = await getPackages();
 
   return (
     <footer className="bg-ceylon-900 text-white/80">

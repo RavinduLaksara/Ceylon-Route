@@ -3,20 +3,31 @@ import { ArrowRight } from "lucide-react";
 import { Hero } from "@/components/home/Hero";
 import { FleetShowcase } from "@/components/home/FleetShowcase";
 import { TrustSection } from "@/components/home/TrustSection";
-import { ReviewCarousel } from "@/components/home/ReviewCarousel";
+import { ReviewsSection } from "@/components/home/ReviewsSection";
 import { PackageCard } from "@/components/packages/PackageCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
-import { fleet, pricingSettings, reviews, tourPackages } from "@/data/mockTours";
+import { fleet } from "@/data/mockTours";
+import {
+  getApprovedReviews,
+  getFeaturedPackages,
+  getPackages,
+  getSettings,
+} from "@/lib/data/queries";
 
-export default function Home() {
-  const featured = tourPackages.filter((p) => p.isFeatured);
+export default async function Home() {
+  const [settings, packages, featured, reviews] = await Promise.all([
+    getSettings(),
+    getPackages(),
+    getFeaturedPackages(),
+    getApprovedReviews(),
+  ]);
 
   return (
     <>
-      <Hero settings={pricingSettings} />
+      <Hero settings={settings} packages={packages} />
 
-      <FleetShowcase fleet={fleet} />
+      <FleetShowcase fleet={fleet} packages={packages} />
 
       {/* Featured packages */}
       <section className="bg-white py-20 sm:py-24">
@@ -29,7 +40,7 @@ export default function Home() {
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((pkg, i) => (
               <Reveal key={pkg.id} delay={i * 80} as="div">
-                <PackageCard pkg={pkg} />
+                <PackageCard pkg={pkg} settings={settings} />
               </Reveal>
             ))}
           </div>
@@ -46,7 +57,7 @@ export default function Home() {
 
       <TrustSection />
 
-      <ReviewCarousel reviews={reviews} />
+      <ReviewsSection reviews={reviews} />
     </>
   );
 }

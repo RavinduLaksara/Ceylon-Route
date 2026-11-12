@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, MapPin, ArrowRight, Moon } from "lucide-react";
-import type { TourPackage } from "@/types/tour";
-import { pricingSettings } from "@/data/mockTours";
+import type { PricingSettings, TourPackage } from "@/types/tour";
 import { cheapestTotal, formatUsd } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 
@@ -13,8 +12,14 @@ const styleColors: Record<string, string> = {
   Scenic: "bg-cyan-50 text-ocean",
 };
 
-export function PackageCard({ pkg }: { pkg: TourPackage }) {
-  const from = cheapestTotal(pkg.approxDistanceKm, pkg.durationDays, pricingSettings);
+export function PackageCard({
+  pkg,
+  settings,
+}: {
+  pkg: TourPackage;
+  settings: PricingSettings;
+}) {
+  const from = cheapestTotal(pkg.approxDistanceKm, pkg.durationDays, settings);
 
   return (
     <Link

@@ -1,22 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Check, X, Plus, MessageCircle, CalendarCheck, Info } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Check, X, CalendarCheck, Info } from "lucide-react";
 import type { PricingSettings, TourPackage, VehicleType } from "@/types/tour";
 import { calculatePrice, formatUsd } from "@/lib/pricing";
 import { buildWhatsAppLink, vehicleLabel } from "@/lib/whatsapp";
 import { vehicleOrder } from "@/data/mockTours";
 import { WhatsAppGlyph } from "@/components/ui/FloatingWhatsApp";
+import { BookingModal } from "@/components/booking/BookingModal";
 
 export function BookingSidebar({
   pkg,
   settings,
+  packages,
 }: {
   pkg: TourPackage;
   settings: PricingSettings;
+  packages: TourPackage[];
 }) {
   const [vehicle, setVehicle] = useState<VehicleType>("Aqua");
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const breakdown = useMemo(
     () =>
@@ -112,7 +115,7 @@ export function BookingSidebar({
           {/* CTAs */}
           <button
             type="button"
-            onClick={() => setDialogOpen(true)}
+            onClick={() => setModalOpen(true)}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold text-ceylon-900 transition-transform hover:scale-[1.02]"
           >
             <CalendarCheck className="h-4 w-4" /> Book Now
@@ -156,14 +159,14 @@ export function BookingSidebar({
         </div>
       </div>
 
-      {dialogOpen && (
-        <BookingDialog
-          pkg={pkg}
-          vehicle={vehicle}
-          total={formatUsd(breakdown.total)}
-          durationLabel={durationLabel}
-          waHref={waHref}
-          onClose={() => setDialogOpen(false)}
+      {modalOpen && (
+        <BookingModal
+          open
+          onClose={() => setModalOpen(false)}
+          settings={settings}
+          packages={packages}
+          initialPackage={pkg}
+          initialVehicle={vehicle}
         />
       )}
     </div>
@@ -175,105 +178,6 @@ function Row({ label, value }: { label: string; value: string }) {
     <div className="flex items-center justify-between text-ink/70">
       <span className="text-xs">{label}</span>
       <span className="font-medium text-ink">{value}</span>
-    </div>
-  );
-}
-
-function BookingDialog({
-  pkg,
-  vehicle,
-  total,
-  durationLabel,
-  waHref,
-  onClose,
-}: {
-  pkg: TourPackage;
-  vehicle: VehicleType;
-  total: string;
-  durationLabel: string;
-  waHref: string;
-  onClose: () => void;
-}) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
-
-  return (
-    <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/70 p-4"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Booking request"
-    >
-      <div
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
-        style={{ animation: "var(--animate-fade-in)" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-ink">Reserve your journey</h3>
-            <p className="mt-1 text-sm text-ink/60">Confirm the details and we&apos;ll take it from here.</p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-ink/50 hover:bg-surface"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <dl className="mt-5 space-y-2 rounded-xl bg-surface p-4 text-sm">
-          <div className="flex justify-between">
-            <dt className="text-ink/55">Tour</dt>
-            <dd className="max-w-[60%] text-right font-medium text-ink">{pkg.title}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-ink/55">Duration</dt>
-            <dd className="font-medium text-ink">{durationLabel}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-ink/55">Vehicle</dt>
-            <dd className="font-medium text-ink">{vehicleLabel(vehicle)}</dd>
-          </div>
-          <div className="flex justify-between border-t border-ink/10 pt-2 text-base">
-            <dt className="font-semibold text-ink">Estimated total</dt>
-            <dd className="font-bold text-ceylon-800">{total}</dd>
-          </div>
-        </dl>
-
-        <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-ink/55">
-          <Plus className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-dark" />
-          Our team confirms availability and finalises your custom route directly on WhatsApp —
-          usually within a couple of hours.
-        </p>
-
-        <a
-          href={waHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={onClose}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold text-ceylon-900 transition-transform hover:scale-[1.02]"
-        >
-          <MessageCircle className="h-4 w-4" /> Confirm &amp; continue on WhatsApp
-        </a>
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-2 w-full rounded-full px-5 py-2.5 text-sm font-medium text-ink/55 hover:text-ink"
-        >
-          Keep browsing
-        </button>
-      </div>
     </div>
   );
 }
